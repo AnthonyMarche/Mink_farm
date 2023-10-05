@@ -10,11 +10,13 @@ class Animal extends Model
 {
     use HasFactory;
 
+    protected $table = 'animal';
+
     protected $fillable = ['name', 'age', 'description', 'price_ht', 'sale_status', 'type_id'];
 
-    public function type(): BelongsTo
+    public function breed(): BelongsTo
     {
-        return $this->belongsTo(Type::class);
+        return $this->belongsTo(Breed::class);
     }
 
     public function getSaleStatusAttribute(): string

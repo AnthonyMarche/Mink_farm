@@ -7,15 +7,6 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, Link, useForm } from '@inertiajs/vue3';
 
-defineProps({
-    canResetPassword: {
-        type: Boolean,
-    },
-    status: {
-        type: String,
-    },
-});
-
 const form = useForm({
     email: '',
     password: '',
@@ -33,11 +24,10 @@ const submit = () => {
     <GuestLayout>
         <Head title="Connexion" />
 
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
-            {{ status }}
-        </div>
-
         <form @submit.prevent="submit">
+          <div class="text-center mb-8 font-medium text-gray-700">
+            Connexion administration
+          </div>
             <div>
                 <InputLabel for="email" value="Email" />
 

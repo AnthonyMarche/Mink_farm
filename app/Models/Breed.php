@@ -10,10 +10,17 @@ class Breed extends Model
 {
     use HasFactory;
 
+    protected $table = 'breed';
+
     protected $fillable = ['name'];
 
     public function types(): HasMany
     {
         return $this->hasMany(Type::class);
+    }
+
+    public function animals(): HasMany
+    {
+        return $this->hasMany(Animal::class);
     }
 }
