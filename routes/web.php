@@ -23,13 +23,14 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/', [AnimalController::class, 'getTypeAndRace'])->name('showAnimals');
-Route::get('/filterAnimal', [AnimalController::class, 'showAnimals'])->name('filteredAnimals');
+Route::get('/', [AnimalController::class, 'showAnimals'])->name('showAnimals');
+Route::get('/filterAnimal', [AnimalController::class, 'getAnimals'])->name('filteredAnimals');
 
+Route::middleware('auth')->group(function () {
+    Route::get('/animals', [AnimalController::class, 'adminShowAnimals'])->name('admin.showAnimal');
+    Route::delete('/animal/{animalId}', [AnimalController::class, 'deleteAnimal'])->name('admin.deleteAnimal');
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+});
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
