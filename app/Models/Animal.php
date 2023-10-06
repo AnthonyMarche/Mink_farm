@@ -12,6 +12,8 @@ class Animal extends Model
 
     protected $table = 'animal';
 
+    protected $appends = ['price_TTC'];
+
     protected $fillable = ['name', 'age', 'description', 'price_ht', 'sale_status', 'type_id'];
 
     public function breed(): BelongsTo
@@ -26,6 +28,7 @@ class Animal extends Model
 
     public function getPriceTTCAttribute(): float
     {
-        return $this->priceHT * 1.20;
+        $priceTTC = $this->attributes['price_ht'] * 1.20;
+        return round($priceTTC, 2);
     }
 }
