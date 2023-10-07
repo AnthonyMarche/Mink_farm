@@ -44,7 +44,15 @@ class Animal extends Model
 
     protected $appends = ['price_TTC'];
 
-    protected $fillable = ['name', 'age', 'description', 'price_ht', 'sale_status', 'breed_id'];
+    protected $fillable = [
+        'name',
+        'age',
+        'description',
+        'price_ht',
+        'sale_status',
+        'breed_id',
+        'image_path'
+    ];
 
     public function breed(): BelongsTo
     {

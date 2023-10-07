@@ -114,7 +114,7 @@ watchEffect(() => {
       </div>
     </div>
     <div class="card mx-auto sm:px-6 lg:px-8 space-y-6 mt-10">
-      <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg" v-for="animal in animals">
+      <div class="p-4 sm:p-6 bg-gray-100 shadow sm:rounded-lg" v-for="animal in animals">
         <CardShow :animal="animal" @refreshAnimals="fetchFilteredAnimals"></CardShow>
       </div>
       <div v-if="!animals.length" class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
