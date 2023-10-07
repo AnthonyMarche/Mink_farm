@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('animal', function (Blueprint $table) {
+        Schema::create('animals', function (Blueprint $table) {
             $table->id()->autoIncrement();
             $table->string('name')->nullable(false);
             $table->integer('age')->nullable(false);
@@ -19,7 +19,7 @@ return new class extends Migration
             $table->decimal('price_ht', 10)->nullable(false);
             $table->boolean('sale_status')->default(false);
             $table->timestamps();
-            $table->foreignId('type_id')->constrained('type');
+            $table->foreignId('type_id')->constrained('types');
 
         });
     }

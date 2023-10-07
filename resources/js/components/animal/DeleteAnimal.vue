@@ -20,7 +20,7 @@ const confirmDelete = () => {
 };
 
 const deleteAnimal = (animalId) => {
-    axios.delete('/animal/' + animalId)
+    axios.delete('/animals/' + animalId)
         .then(res => {
             confirmDeletion.value = false;
             toast.success("Animal supprimé avec succès")

@@ -9,7 +9,10 @@ defineProps({
   defaultOption: {
     type: String,
     required: true
-  }
+  },
+    requiredOption: {
+      type: Boolean
+    }
 });
 
 const selected = ref(null);
@@ -23,7 +26,7 @@ defineExpose({ focus: () => selected.value.focus() });
       :disabled="options.length === 0"
       :class="{'disabled-select': options.length === 0}"
   >
-    <option :value=null selected>{{ defaultOption }}</option>
+    <option :value=null :disabled="requiredOption" selected>{{ defaultOption }}</option>
     <option v-for="option in options" :value="option.id">
       {{ option.name }}
     </option>

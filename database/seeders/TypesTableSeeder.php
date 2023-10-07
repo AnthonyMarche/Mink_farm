@@ -13,7 +13,7 @@ class TypesTableSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('type')->insert([
+        DB::table('types')->insert([
             ['name' => 'Chien', 'created_at' => new DateTime()],
             ['name' => 'Cheval', 'created_at' => new DateTime()],
             ['name' => 'Brebis', 'created_at' => new DateTime()],

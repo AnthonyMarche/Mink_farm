@@ -2,7 +2,6 @@
 
 use App\Http\Controllers\AnimalController;
 use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -18,24 +17,20 @@ use Inertia\Inertia;
 */
 
 Route::get('/', function () {
-    return Inertia::render('Welcome', [
+    return Inertia::render('Home', [
         'canLogin' => Route::has('login'),
     ]);
 });
 
-Route::get('/', [AnimalController::class, 'showAnimals'])->name('showAnimals');
-Route::get('/filterAnimal', [AnimalController::class, 'getAnimals'])->name('filteredAnimals');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/animals', [AnimalController::class, 'adminShowAnimals'])->name('admin.showAnimal');
-    Route::delete('/animal/{animalId}', [AnimalController::class, 'deleteAnimal'])->name('admin.deleteAnimal');
-
-});
+Route::get('/', [AnimalController::class, 'index']);
+Route::get('/dashboard', [AnimalController::class, 'adminIndex'])->name('dashboard')->middleware(['auth']);
+Route::get('/getAnimals', [AnimalController::class, 'getAnimals'])->name('getAnimals');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::resource('animals', AnimalController::class)->except('index');
 });
 
 require __DIR__.'/auth.php';
