@@ -48,7 +48,7 @@ watch(selectedType, (newType) => {
 });
 
 const fetchFilteredAnimals = () => {
-  axios.get('/filterAnimal', {
+  axios.get('/getAnimals', {
     params: {
       selectedType: selectedType.value,
       selectedBreed: selectedBreed.value,

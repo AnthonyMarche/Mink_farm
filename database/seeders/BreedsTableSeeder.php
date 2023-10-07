@@ -13,7 +13,7 @@ class BreedsTableSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('breed')->insert([
+        DB::table('breeds')->insert([
             ['name' => 'Labrador', 'type_id' => 1, 'created_at' => new DateTime()],
             ['name' => 'Frison', 'type_id' => 2, 'created_at' => new DateTime()],
             ['name' => 'Pottok', 'type_id' => 2, 'created_at' => new DateTime()],

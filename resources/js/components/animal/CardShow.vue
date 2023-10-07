@@ -1,16 +1,17 @@
 <script setup>
 import DeleteAnimal from "@/components/animal/DeleteAnimal.vue";
 import SecondaryButton from "@/components/SecondaryButton.vue";
-import {router} from "@inertiajs/vue3";
+import {router, usePage} from "@inertiajs/vue3";
 
 defineProps({
   animal: {
     type: Object,
   },
 });
+const user = usePage().props.auth.user;
 
 function redirectToUpdate(animalId) {
-    router.visit('/animal/' + animalId);
+    router.visit('/animals/' + animalId + '/edit');
 }
 </script>
 
@@ -26,11 +27,11 @@ function redirectToUpdate(animalId) {
       <ul class="flex justify-around py-6">
         <li>Type : {{animal.breed.type.name}}</li>
         <li>Race : {{animal.breed.name}}</li>
-        <li>Prix : {{animal.price_TTC}} €</li>
+        <li>Prix {{user ? 'HT : ' + animal.price_ht : 'TTC : ' + animal.price_TTC}} €</li>
       </ul>
       {{animal.description}}
-      <div v-if="$page.props.auth.user" class="flex justify-end mt-4 mx-2">
-          <SecondaryButton @click="redirectToUpdate" class="mr-5">Modifier</SecondaryButton>
+      <div v-if="user" class="flex justify-end mt-4 mx-2">
+          <SecondaryButton @click="redirectToUpdate(animal.id)" class="mr-5">Modifier</SecondaryButton>
           <delete-animal :animal-id="animal.id" @refreshAnimals="$emit('refreshAnimals')" />
       </div>
     </div>

@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('breed', function (Blueprint $table) {
+        Schema::create('breeds', function (Blueprint $table) {
             $table->id()->autoIncrement();
             $table->string('name')->nullable(false);
             $table->timestamps();
 
-            $table->foreignId('type_id')->constrained('type');
+            $table->foreignId('type_id')->constrained('types');
         });
     }
 
