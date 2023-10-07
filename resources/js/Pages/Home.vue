@@ -1,7 +1,8 @@
 <script setup>
-import {Head} from '@inertiajs/vue3';
+import {Head, router} from '@inertiajs/vue3';
 import ShowAnimals from "@/components/animal/ShowAnimals.vue";
 import {ref} from "vue";
+import SecondaryButton from "@/components/SecondaryButton.vue";
 
 const props = defineProps({
   types: {
@@ -27,10 +28,14 @@ function updateAnimals(newAnimals) {
     'h-screen': !animals.length,
     'h-full': animals.length
   }">
-    <div>
-      <img src="/storage/images/ferme_background.png" alt="ferme image" class="background-img">
-      <h1 class="text-center text-5xl font-bold title">Mink Farm</h1>
-    </div>
+    <div class="background-container">
+      <div class="flex justify-end items-end">
+        <SecondaryButton @click="router.visit('/login')">Administration</SecondaryButton>
+      </div>
+      <div class="h-full flex justify-center items-center">
+        <h1 class="text-center text-5xl font-bold title">Mink Farm</h1>
+      </div>    </div>
+
     <div class="flex justify-between p-2 mx-14 items-center sell-section">
       <h2 class="text-center font-semibold text-2xl">Nos animaux en vente</h2>
       <p>Pour plus de renseignements, <br> contactez nous au : <a href="tel:+33734567890">07.34.56.78.90</a></p>
@@ -45,17 +50,16 @@ function updateAnimals(newAnimals) {
   padding-bottom: 3rem;
 }
 
-.background-img {
-  max-width: initial;
-  width: 100%;
+.background-container {
+  background-image: url('/storage/images/ferme_background.png');
+  background-size: cover;
+  height: 62vh;
 }
 
 .title {
-  margin-top: -20%;
+  @apply p-6 mb-24;
   color: #d4a71a;
-}
-
-.sell-section {
-  margin-top: 18%;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 45%;
 }
 </style>

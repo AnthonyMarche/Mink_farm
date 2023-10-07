@@ -1,7 +1,9 @@
 <?php
 
+use Database\Seeders\BreedsTableSeeder;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -18,6 +20,10 @@ return new class extends Migration
 
             $table->foreignId('type_id')->constrained('types');
         });
+
+        Artisan::call('db:seed', [
+            '--class' => BreedsTableSeeder::class,
+        ]);
     }
 
     /**

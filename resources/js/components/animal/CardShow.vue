@@ -8,6 +8,7 @@ defineProps({
         type: Object,
     },
 });
+
 const user = usePage().props.auth.user;
 
 function redirectToUpdate(animalId) {
@@ -25,7 +26,7 @@ function redirectToUpdate(animalId) {
         </h3>
         <div>
             <div class="flex justify-around mt-10">
-                <img v-if="animal.image_path" :src="'/storage/' + animal.image_path" alt="Photo animal" class="w-80">
+                <img v-if="animal.image_path" :src="'/storage/' + animal.image_path" alt="Photo animal" class="w-80 rounded-lg">
                 <div class="flex flex-col w-1/2">
                     <ul class="flex justify-around space-x-40 my-12">
                         <li class="flex">
