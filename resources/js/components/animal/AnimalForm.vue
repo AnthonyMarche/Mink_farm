@@ -10,6 +10,7 @@ import Checkbox from "@/components/Checkbox.vue";
 import SelectInput from "@/components/SelectInput.vue";
 import TextAreaInput from "@/components/TextAreaInput.vue";
 import {useToast} from "vue-toastification";
+import SecondaryButton from "@/components/SecondaryButton.vue";
 
 const props = defineProps({
     animal: {
@@ -122,6 +123,7 @@ const submitForm = () => {
                     <div class="flex justify-between items-center">
                         <InputLabel for="image" value="Photo" class="w-full"/>
                         <i
+                            v-if="currentImage"
                             @click="deleteImage"
                             class="fa-solid fa-xmark fa-xl cross"
                         >
@@ -228,6 +230,7 @@ const submitForm = () => {
             </div>
         </div>
         <div class="flex justify-center gap-4 my-10">
+            <SecondaryButton @click="router.visit('/dashboard')">Annuler</SecondaryButton>
             <PrimaryButton :disabled="form.processing">Enregistrer</PrimaryButton>
         </div>
     </form>
