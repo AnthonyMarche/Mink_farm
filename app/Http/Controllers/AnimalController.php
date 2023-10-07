@@ -7,6 +7,7 @@ use App\Models\Animal;
 use App\Services\DataService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpFoundation\Response as httpResponse;
@@ -100,7 +101,21 @@ class AnimalController extends Controller
      */
     public function store(AnimalRequest $request): JsonResponse
     {
-        Animal::create($request->validated());
+        $data = $request->validated();
+
+        if (!empty($request->image) && $request->image != 'undefined' && $request->image != 'null') {
+            $imageName = time() . '.' . $request->image->extension();
+
+            $path = $request->file('image')->storeAs(
+                'animalsPictures',
+                $imageName,
+                'public'
+            );
+
+            $data['image_path'] = $path;
+        }
+
+        Animal::create($data);
 
         return response()->json(['message' => 'Animal créé avec succès'], httpResponse::HTTP_OK);
     }
@@ -123,10 +138,34 @@ class AnimalController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(AnimalRequest $request, string $id): JsonResponse
+    public function update(string $id, AnimalRequest $request): JsonResponse
     {
         $animal = Animal::find($id);
-        $animal->update($request->validated());
+
+        $data = $request->validated();
+
+        if ($request->image != 'undefined') {
+
+            if (!is_null($animal->image_path) && Storage::disk('public')->exists($animal->image_path)) {
+                Storage::disk('public')->delete($animal->image_path);
+                $data['image_path'] = null;
+            }
+
+
+            if ($request->image != 'null') {
+                $imageName = time() . '.' . $request->image->extension();
+
+                $path = $request->file('image')->storeAs(
+                    'animalsPictures',
+                    $imageName,
+                    'public'
+                );
+
+                $data['image_path'] = $path;
+            }
+        }
+
+        $animal->update($data);
 
         return response()->json(['message' => 'Animal modifié avec succès'], httpResponse::HTTP_OK);
     }
@@ -140,6 +179,10 @@ class AnimalController extends Controller
 
         if (!$animal) {
             return response()->json(['message' => 'Animal non trouvé'], httpResponse::HTTP_NOT_FOUND);
+        }
+
+        if (!is_null($animal->image_path) && Storage::disk('public')->exists($animal->image_path)) {
+            Storage::disk('public')->delete($animal->image_path);
         }
 
         $animal->delete();

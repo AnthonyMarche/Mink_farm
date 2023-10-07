@@ -27,8 +27,9 @@ class AnimalRequest extends FormRequest
             'age' => 'required|integer|min:1',
             'description' => 'required|string',
             'price_ht' => 'required|numeric|min:0',
-            'sale_status' => 'required',
+            'sale_status' => 'required|boolean',
             'breed_id' => 'required|exists:breeds,id',
+            'sometimes' => 'nullable|image|max:2048'
         ];
     }
 }
