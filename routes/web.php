@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\AnimalController;
+use App\Http\Controllers\BreedController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TypeController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -22,8 +24,8 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/', [AnimalController::class, 'index']);
-Route::get('/dashboard', [AnimalController::class, 'adminIndex'])->name('dashboard')->middleware(['auth']);
+Route::get('/', [AnimalController::class, 'index'])->name('home');
+Route::get('/animals', [AnimalController::class, 'adminIndex'])->name('admin.home')->middleware(['auth']);
 Route::get('/getAnimals', [AnimalController::class, 'getAnimals'])->name('getAnimals');
 
 Route::middleware('auth')->group(function () {
@@ -31,6 +33,8 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::resource('animals', AnimalController::class)->except('index');
+    Route::resource('types', TypeController::class);
+    Route::resource('breeds', BreedController ::class);
 });
 
 require __DIR__.'/auth.php';

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('animals', function (Blueprint $table) {
             $table->dropConstrainedForeignId('type_id');
-            $table->foreignId('breed_id')->constrained('breeds');
+            $table->foreignId('breed_id')->constrained('breeds')->cascadeOnDelete();
         });
     }
 

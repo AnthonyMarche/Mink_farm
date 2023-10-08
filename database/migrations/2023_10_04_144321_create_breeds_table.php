@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('name')->nullable(false);
             $table->timestamps();
 
-            $table->foreignId('type_id')->constrained('types');
+            $table->foreignId('type_id')->constrained('types')->cascadeOnDelete();
         });
 
         Artisan::call('db:seed', [

@@ -61,7 +61,7 @@ function deleteImage() {
 }
 
 const form = useForm({
-    image: animal.value ? animal.value.image : null,
+    image: animal.value ? animal.value.image : '',
     name: animal.value ? animal.value.name : '',
     age: animal.value ? animal.value.age : '',
     description: animal.value ? animal.value.description : '',
@@ -85,13 +85,13 @@ const submitForm = () => {
         formData.append("_method", 'PATCH');
         axios({
             method: "POST",
-            url: `/animals/${animal.value.id}`,
+            url: route('animals.update', {animal: animal.value.id}),
             data: formData,
             headers: headers,
         })
             .then(response => {
                 toast.success("Animal modifié avec succès");
-                router.visit('/dashboard');
+                router.visit(route('admin.home'));
             })
             .catch(error => {
                 const errors = error.response.data.errors;
@@ -100,10 +100,10 @@ const submitForm = () => {
                 }
             });
     } else {
-        axios.post('/animals', formData)
+        axios.post(route('animals.store'), formData)
             .then(response => {
                 toast.success("Animal Créé avec succès");
-                router.visit('/dashboard');
+                router.visit(route('admin.home'));
             })
             .catch(error => {
                 const errors = error.response.data.errors;
@@ -230,7 +230,7 @@ const submitForm = () => {
             </div>
         </div>
         <div class="flex justify-center gap-4 my-10">
-            <SecondaryButton @click="router.visit('/dashboard')">Annuler</SecondaryButton>
+            <SecondaryButton @click="router.visit(route('admin.home'))">Annuler</SecondaryButton>
             <PrimaryButton :disabled="form.processing">Enregistrer</PrimaryButton>
         </div>
     </form>

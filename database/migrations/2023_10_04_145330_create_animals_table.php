@@ -19,7 +19,7 @@ return new class extends Migration
             $table->decimal('price_ht', 10)->nullable(false);
             $table->boolean('sale_status')->default(false);
             $table->timestamps();
-            $table->foreignId('type_id')->constrained('types');
+            $table->foreignId('type_id')->constrained('types')->cascadeOnDelete();
 
         });
     }

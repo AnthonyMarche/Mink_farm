@@ -1,8 +1,8 @@
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head } from '@inertiajs/vue3';
 import ShowAnimals from "@/components/animal/ShowAnimals.vue";
 import {ref} from "vue";
+import AdminAnimalLayout from "@/Layouts/AdminAnimalLayout.vue";
 
 const props = defineProps({
   types: {
@@ -20,13 +20,9 @@ function updateAnimals(newAnimals) {
 </script>
 
 <template>
-    <Head title="Dashboard" />
+    <Head title="Animaux" />
 
-    <AuthenticatedLayout>
-        <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Dashboard</h2>
-        </template>
-
+    <AdminAnimalLayout>
         <div class="py-12">
             <div class="mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -34,5 +30,5 @@ function updateAnimals(newAnimals) {
                 </div>
             </div>
         </div>
-    </AuthenticatedLayout>
+    </AdminAnimalLayout>
 </template>

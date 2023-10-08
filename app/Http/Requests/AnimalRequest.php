@@ -29,7 +29,17 @@ class AnimalRequest extends FormRequest
             'price_ht' => 'required|numeric|min:0',
             'sale_status' => 'required|boolean',
             'breed_id' => 'required|exists:breeds,id',
-            'sometimes' => 'nullable|image|max:2048'
+            'image' => 'nullable|image|max:2048'
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'breed_id.required' => 'Vous devez selectionner une race.',
+            'breed_id.exists' => 'La race sélectionnée n\'est pas valide.',
+            'image.image' => 'Le fichier doit être une image.',
+            'image.max' => 'L\'image ne doit pas dépasser 2 Mo.',
         ];
     }
 }

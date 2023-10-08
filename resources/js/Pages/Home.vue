@@ -34,7 +34,8 @@ function updateAnimals(newAnimals) {
       </div>
       <div class="h-full flex justify-center items-center">
         <h1 class="text-center text-5xl font-bold title">Mink Farm</h1>
-      </div>    </div>
+      </div>
+    </div>
 
     <div class="flex justify-between p-2 mx-14 items-center sell-section">
       <h2 class="text-center font-semibold text-2xl">Nos animaux en vente</h2>
