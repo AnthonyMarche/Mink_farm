@@ -47,7 +47,7 @@ function updateAnimals(newAnimals) {
 
 <style>
 .body {
-  background-color: #f7dd8d;
+  background-color: #fff7de;
   padding-bottom: 3rem;
 }
 
