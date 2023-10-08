@@ -1,15 +1,17 @@
 <script setup>
 import DeleteAnimal from "@/components/animal/DeleteAnimal.vue";
 import SecondaryButton from "@/components/SecondaryButton.vue";
-import {router, usePage} from "@inertiajs/vue3";
+import {router} from "@inertiajs/vue3";
 
 defineProps({
     animal: {
         type: Object,
     },
+    isAdmin: {
+        type: Boolean,
+        required: true
+    }
 });
-
-const user = usePage().props.auth.user;
 
 function redirectToUpdate(animalId) {
     router.visit('/animals/' + animalId + '/edit');
@@ -18,7 +20,7 @@ function redirectToUpdate(animalId) {
 
 <template>
     <div class="flex flex-col">
-        <div class="flex justify-end">
+        <div v-if="isAdmin" class="flex justify-end">
             <div v-if="animal.sale_status === 'vendu'" class="bg-red-700 w-fit p-2 rounded-lg">VENDU</div>
         </div>
         <h3 class="text-center text-xl">
@@ -36,7 +38,7 @@ function redirectToUpdate(animalId) {
                             <p class="font-bold mr-2">Race :</p> {{ animal.breed.name }}
                         </li>
                         <li class="flex">
-                            <p class="font-bold mr-2">Prix :</p> {{ user ? 'HT : ' + animal.price_ht : 'TTC : ' + animal.price_TTC }} €
+                            <p class="font-bold mr-2">Prix :</p> {{ isAdmin ? 'HT : ' + animal.price_ht : 'TTC : ' + animal.price_TTC }} €
                         </li>
                     </ul>
                     <div class="flex flex-col items-center">
@@ -45,7 +47,7 @@ function redirectToUpdate(animalId) {
                     </div>
                 </div>
             </div>
-            <div v-if="user" class="flex justify-end mt-4 mx-2">
+            <div v-if="isAdmin" class="flex justify-end mt-4 mx-2">
                 <SecondaryButton @click="redirectToUpdate(animal.id)" class="mr-5">Modifier</SecondaryButton>
                 <delete-animal :animal-id="animal.id" @refreshAnimals="$emit('refreshAnimals')"/>
             </div>

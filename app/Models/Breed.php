@@ -31,7 +31,7 @@ class Breed extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'type_id'];
 
     public function type(): BelongsTo
     {

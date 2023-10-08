@@ -1,9 +1,9 @@
 <script setup>
 import CardShow from "@/components/animal/CardShow.vue";
 import SelectInput from "@/components/SelectInput.vue";
-import {ref, toRefs, watch, watchEffect} from "vue";
+import {computed, ref, toRefs, watch, watchEffect} from "vue";
 import InputLabel from "@/components/InputLabel.vue";
-import {usePage} from "@inertiajs/vue3";
+import {router, usePage} from "@inertiajs/vue3";
 
 const props = defineProps({
   types: {
@@ -32,7 +32,11 @@ const saleStatusOptions = {
   1: "En vente",
   0: "Vendu",
 };
+
 const user = usePage().props.auth.user;
+const isAdmin =  computed(() => {
+    return user && router.page.url === '/animals';
+})
 
 watch(selectedType, (newType) => {
   selectedBreed.value = null;
@@ -57,7 +61,7 @@ const fetchFilteredAnimals = () => {
     },
   })
       .then(response => {
-        if (user) {
+        if (isAdmin.value) {
           animals.value = response.data.animals;
         } else {
           animals.value = response.data.animals.filter(
@@ -115,7 +119,7 @@ watchEffect(() => {
     </div>
     <div class="card mx-auto sm:px-6 lg:px-8 space-y-6 mt-10">
       <div class="p-4 sm:p-6 bg-gray-100 shadow sm:rounded-lg" v-for="animal in animals">
-        <CardShow :animal="animal" @refreshAnimals="fetchFilteredAnimals"></CardShow>
+        <CardShow :animal="animal" @refreshAnimals="fetchFilteredAnimals" :is-admin="isAdmin"></CardShow>
       </div>
       <div v-if="!animals.length" class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
         <p class="text-center">Aucun animal ne correspond à vos critères</p>

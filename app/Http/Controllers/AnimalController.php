@@ -41,7 +41,7 @@ class AnimalController extends Controller
     {
         $data = $this->dataService->getTypeAndRaceData();
 
-        return Inertia::render('Dashboard', [
+        return Inertia::render('Animal/Index', [
             'types' => $data['types'],
             'breeds' => $data['breeds']
         ]);
@@ -90,7 +90,7 @@ class AnimalController extends Controller
     {
         $data = $this->dataService->getTypeAndRaceData();
 
-        return Inertia::render('UpdateAnimal', [
+        return Inertia::render('Animal/Edit', [
             'types' => $data['types'],
             'breeds' => $data['breeds']
         ]);
@@ -128,7 +128,7 @@ class AnimalController extends Controller
         $data = $this->dataService->getTypeAndRaceData();
         $animal = Animal::with(['breed.type'])->find($id);
 
-        return Inertia::render('UpdateAnimal', [
+        return Inertia::render('Animal/Edit', [
             'animal' => $animal,
             'types' => $data['types'],
             'breeds' => $data['breeds']

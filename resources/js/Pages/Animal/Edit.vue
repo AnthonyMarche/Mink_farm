@@ -1,10 +1,11 @@
 <script setup>
 
 import {Head} from "@inertiajs/vue3";
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import AnimalForm from "@/components/animal/AnimalForm.vue";
+import AdminAnimalLayout from "@/Layouts/AdminAnimalLayout.vue";
+import {toRefs} from "vue";
 
-defineProps({
+const props = defineProps({
     animal: {
         type: Object,
     },
@@ -18,17 +19,14 @@ defineProps({
     },
 });
 
+const {animal} = toRefs(props);
+
 </script>
 
 <template>
-    <Head title="Modifier"/>
+    <Head :title="animal ? 'Modifier animal' : 'Créer animal'"/>
 
-    <AuthenticatedLayout>
-        <template #header>
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ animal ? 'Modifier' : 'Créer' }}
-                animal</h2>
-        </template>
-
+    <AdminAnimalLayout>
         <div class="py-12">
             <div class="mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
@@ -36,7 +34,7 @@ defineProps({
                 </div>
             </div>
         </div>
-    </AuthenticatedLayout>
+    </AdminAnimalLayout>
 </template>
 
 <style scoped>
