@@ -5,49 +5,45 @@ namespace App\Console\Commands;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
-use Symfony\Component\Console\Input\InputArgument;
+use Illuminate\Validation\Rules\Password;
 
 class CreateUser extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'app:create-user';
-
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
+    protected $signature = 'app:user-create';
     protected $description = 'Create user account';
 
-    protected function configure(): void
-    {
-        $this->setName('user:create')
-            ->setDescription('Create a new user')
-            ->addArgument('name', InputArgument::REQUIRED, 'User name')
-            ->addArgument('email', InputArgument::REQUIRED, 'User email')
-            ->addArgument('password', InputArgument::REQUIRED, 'User password');
-    }
-
-    /**
-     * Execute the console command.
-     */
     public function handle()
     {
-        $name = $this->argument('name');
-        $email = $this->argument('email');
-        $password = $this->argument('password');
+        $name = $this->askValid('Write a name', 'required|string');
+        $email = $this->askValid('Write an email', 'required|email|unique:users,email');
+        $password = $this->askValid('Write a password', [
+            'required',
+            Password::min(8)->mixedCase()->letters()->numbers()->symbols(),
+        ]);
 
-        $user = new User();
-        $user->name = $name;
-        $user->email = $email;
-        $user->password = Hash::make($password);
-        $user->save();
+        User::create([
+            'name' => $name,
+            'email' => $email,
+            'password' => Hash::make($password),
+        ]);
 
-        $this->info('Utilisateur créé.');
+        $this->info('User "' . $name . '" with email "' . $email . '" created.');
+        return 0;
     }
 
+    private function askValid($question, $rules)
+    {
+        $value = $this->ask($question);
+        $validator = validator(['value' => $value], ['value' => $rules]);
+
+        if ($validator->fails()) {
+            foreach ($validator->errors()->all() as $error) {
+                $this->error($error);
+            }
+            return $this->askValid($question, $rules);
+        }
+
+        return $value;
+    }
 }
+

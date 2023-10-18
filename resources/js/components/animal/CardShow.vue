@@ -13,9 +13,6 @@ defineProps({
     }
 });
 
-function redirectToUpdate(animalId) {
-    router.visit('/animals/' + animalId + '/edit');
-}
 </script>
 
 <template>
@@ -48,7 +45,12 @@ function redirectToUpdate(animalId) {
                 </div>
             </div>
             <div v-if="isAdmin" class="flex justify-end mt-4 mx-2">
-                <SecondaryButton @click="redirectToUpdate(animal.id)" class="mr-5">Modifier</SecondaryButton>
+                <SecondaryButton
+                    @click="router.visit(route('animals.edit', {animal: animal.id}))"
+                    class="mr-5"
+                >
+                    Modifier
+                </SecondaryButton>
                 <delete-animal :animal-id="animal.id" @refreshAnimals="$emit('refreshAnimals')"/>
             </div>
         </div>

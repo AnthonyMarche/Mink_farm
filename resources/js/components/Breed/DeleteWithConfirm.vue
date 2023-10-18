@@ -2,9 +2,9 @@
 import DangerButton from '@/components/DangerButton.vue';
 import Modal from '@/components/Modal.vue';
 import SecondaryButton from '@/components/SecondaryButton.vue';
-import {getCurrentInstance, ref, toRefs} from 'vue';
+import {ref} from 'vue';
 import {useToast} from "vue-toastification";
-import {router, usePage} from "@inertiajs/vue3";
+import {router} from "@inertiajs/vue3";
 
 const props = defineProps({
     item: {
@@ -22,18 +22,16 @@ const props = defineProps({
 });
 
 const confirmDeletion = ref(false);
-const {item} = toRefs(props);
-const {url} = toRefs(props);
 const toast = useToast();
 const confirmDelete = () => {
     confirmDeletion.value = true;
 };
 
 const deleteItem = () => {
-    axios.delete(url.value)
+    axios.delete(props.url)
         .then(() => {
             confirmDeletion.value = false;
-            toast.success( item.value.name + " supprimé avec succès")
+            toast.success( props.item.name + " supprimé avec succès")
             router.visit(router.page.url);
         })
         .catch(error => {
