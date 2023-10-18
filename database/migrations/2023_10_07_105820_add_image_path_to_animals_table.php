@@ -22,14 +22,13 @@ return new class extends Migration
         ]);
     }
 
-
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
         Schema::table('animals', function (Blueprint $table) {
-            //
+            $table->dropColumn('image_path');
         });
     }
 };
