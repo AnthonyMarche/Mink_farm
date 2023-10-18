@@ -1,6 +1,6 @@
 <script setup>
 
-import {router, useForm} from "@inertiajs/vue3";
+import {router, useForm, usePage} from "@inertiajs/vue3";
 import {ref, toRefs, watch} from "vue";
 import TextInput from "@/components/TextInput.vue";
 import InputLabel from "@/components/InputLabel.vue";
@@ -40,7 +40,7 @@ watch(selectedType, (newType) => {
         return;
     }
 
-    validBreed.value = props.breeds.value.filter(
+    validBreed.value = props.breeds.filter(
         breed => breed.type_id === newType
     );
 });
@@ -66,7 +66,8 @@ const form = useForm({
     description: animal.value ? animal.value.description : '',
     price_ht: animal.value ? animal.value.price_ht : '',
     sale_status: animal.value ? animal.value.sale_status === 'en vente' : false,
-    breed_id: animal.value ? animal.value.breed_id : null
+    breed_id: animal.value ? animal.value.breed_id : null,
+    user_id: usePage().props.auth.user.id
 });
 
 const submitForm = () => {

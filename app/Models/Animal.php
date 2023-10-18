@@ -64,12 +64,18 @@ class Animal extends Model
         'price_ht',
         'sale_status',
         'breed_id',
-        'image_path'
+        'image_path',
+        'user_id'
     ];
 
     public function breed(): BelongsTo
     {
         return $this->belongsTo(Breed::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 
     public function getSaleStatusAttribute(): string
@@ -79,7 +85,8 @@ class Animal extends Model
 
     public function getPriceTTCAttribute(): float
     {
-        $priceTTC = $this->attributes['price_ht'] * 1.20;
+        $vatRates = $this->user->countryVatRate->vat_rate;
+        $priceTTC = $this->price_ht * $vatRates;
         return round($priceTTC, 2);
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\CountryVatRates;
 use App\Models\User;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
@@ -20,11 +21,18 @@ class CreateUser extends Command
             'required',
             Password::min(8)->mixedCase()->letters()->numbers()->symbols(),
         ]);
+        $countries = CountryVatRates::all()->pluck('country', 'id')->toArray();
+        $country = $this->choice(
+            'In which country is your business subject to tax regulations?',
+            $countries
+        );
+        $selectedCountryId = array_search($country, $countries);
 
         User::create([
             'name' => $name,
             'email' => $email,
             'password' => Hash::make($password),
+            'country_vat_rates_id' => $selectedCountryId
         ]);
 
         $this->info('User "' . $name . '" with email "' . $email . '" created.');
