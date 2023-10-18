@@ -52,33 +52,10 @@ class AnimalController extends Controller
      */
     public function getAnimals(Request $request): JsonResponse
     {
-        $selectedType = $request->input('selectedType');
-        $selectedBreed = $request->input('selectedBreed');
-        $selectedOrderBy = $request->input('selectedOrderBy');
-        $selectedSaleStatus = $request->input('selectedSaleStatus');
+        $orderBy = $request->input('orderBy');
+        $field = $request->all();
 
-        $animalsQuery = Animal::with(['breed.type'])
-            ->select('animals.*')
-            ->join('breeds', 'animals.breed_id', '=', 'breeds.id');
-
-        if ($selectedSaleStatus !== null) {
-            $animalsQuery->where('animals.sale_status', $selectedSaleStatus);
-        }
-
-        if ($selectedType !== null) {
-            $animalsQuery->where('breeds.type_id', $selectedType);
-        }
-
-        if ($selectedBreed !== null) {
-            $animalsQuery->where('animals.breed_id', $selectedBreed);
-        }
-        if ($selectedOrderBy === 'created_at') {
-            $animalsQuery->orderBy('animals.' . $selectedOrderBy, 'DESC');
-        } else {
-            $animalsQuery->orderBy('animals.' . $selectedOrderBy);
-
-        }
-        $animals = $animalsQuery->get();
+        $animals = (new Animal)->getAnimalsFiltered($field, $orderBy);
 
         return response()->json(['animals' => $animals]);
     }

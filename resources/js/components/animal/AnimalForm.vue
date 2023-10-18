@@ -28,7 +28,6 @@ const props = defineProps({
 
 const {animal} = toRefs(props);
 const selectedType = ref(null);
-const {breeds} = toRefs(props);
 const validBreed = ref([]);
 const toast = useToast();
 let currentImage = ref(
@@ -41,7 +40,7 @@ watch(selectedType, (newType) => {
         return;
     }
 
-    validBreed.value = breeds.value.filter(
+    validBreed.value = props.breeds.value.filter(
         breed => breed.type_id === newType
     );
 });

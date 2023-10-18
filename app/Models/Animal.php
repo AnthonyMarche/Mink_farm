@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Database\Factories\AnimalFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -42,6 +43,18 @@ class Animal extends Model
 {
     use HasFactory;
 
+    private const VALID_FILTERS = [
+        'type' => 'breeds.type_id',
+        'breed' => 'animals.breed_id',
+        'sales_status' => 'animals.breed_id'
+    ];
+
+    private const VALID_ORDER = [
+        'created_at' => 'animals.created_at',
+        'name' => 'animals.name',
+        'price_ht' => 'animals.price_ht'
+    ];
+
     protected $appends = ['price_TTC'];
 
     protected $fillable = [
@@ -68,5 +81,21 @@ class Animal extends Model
     {
         $priceTTC = $this->attributes['price_ht'] * 1.20;
         return round($priceTTC, 2);
+    }
+
+    public function getAnimalsFiltered(array $fields, $orderBy): Collection|array
+    {
+        $qb = Animal::with(['breed.type'])
+            ->select('animals.*')
+            ->join('breeds', 'animals.breed_id', '=', 'breeds.id');
+
+        foreach ($fields as $key => $value) {
+            if (array_key_exists($key, self::VALID_FILTERS)) {
+                $qb->where(self::VALID_FILTERS[$key], $value);
+            }
+        }
+
+        $qb->orderBy(self::VALID_ORDER[$orderBy], $orderBy === 'created_at' ? 'DESC' : 'ASC' );
+        return $qb->get();
     }
 }
