@@ -29,7 +29,8 @@ class AnimalRequest extends FormRequest
             'price_ht' => 'required|numeric|min:0',
             'sale_status' => 'required|boolean',
             'breed_id' => 'required|exists:breeds,id',
-            'image' => 'nullable|image|max:2048'
+            'image' => 'nullable|image|max:2048',
+            'user_id' => 'required|exists:users,id',
         ];
     }
 
@@ -39,7 +40,7 @@ class AnimalRequest extends FormRequest
             'breed_id.required' => 'Vous devez selectionner une race.',
             'breed_id.exists' => 'La race sélectionnée n\'est pas valide.',
             'image.image' => 'Le fichier doit être une image.',
-            'image.max' => 'L\'image ne doit pas dépasser 2 Mo.',
+            'image.max' => 'L\'image ne doit pas dépasser 2 Mo.'
         ];
     }
 }

@@ -53,7 +53,6 @@ watch(selectedType, (newType) => {
 const fetchFilteredAnimals = () => {
     axios.get('/getAnimals', {
         params: {
-            isPublic,
             type: selectedType.value,
             breed: selectedBreed.value,
             orderBy: selectedOrderBy.value,

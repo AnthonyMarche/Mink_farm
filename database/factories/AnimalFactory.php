@@ -4,7 +4,6 @@ namespace Database\Factories;
 
 use App\Models\Animal;
 use App\Models\Breed;
-use App\Models\Type;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -38,6 +37,7 @@ class AnimalFactory extends Factory
             'sale_status' => $this->faker->boolean(65),
             'breed_id' => $breed->id,
             'image_path' => self::BREED_IMAGE[$breed->id],
+            'user_id' => 1,
             'created_at' => $this->faker->dateTimeBetween('-1 month')
         ];
     }

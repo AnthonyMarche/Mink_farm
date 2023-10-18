@@ -20,7 +20,7 @@ const confirmDelete = () => {
 };
 
 const deleteAnimal = (animalId) => {
-    axios.delete(route('animals.delete', { animal: animalId}))
+    axios.delete(route('animals.destroy', { animal: animalId}))
         .then(res => {
             confirmDeletion.value = false;
             toast.success("Animal supprimé avec succès")

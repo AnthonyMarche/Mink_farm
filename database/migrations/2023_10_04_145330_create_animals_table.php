@@ -20,7 +20,7 @@ return new class extends Migration
             $table->boolean('sale_status')->default(false);
             $table->timestamps();
             $table->foreignId('type_id')->constrained('types')->cascadeOnDelete();
-
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
         });
     }
 
