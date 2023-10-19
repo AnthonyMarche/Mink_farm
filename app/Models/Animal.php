@@ -37,6 +37,13 @@ use Illuminate\Support\Carbon;
  * @method static Builder|Animal wherePriceHt($value)
  * @method static Builder|Animal whereSaleStatus($value)
  * @method static Builder|Animal whereUpdatedAt($value)
+ * @property int $user_id
+ * @property string|null $image_path
+ * @property-read \App\Models\User $user
+ * @method static Builder|Animal animalsFiltered(array $parameters)
+ * @method static Builder|Animal onSale()
+ * @method static Builder|Animal whereImagePath($value)
+ * @method static Builder|Animal whereUserId($value)
  * @mixin \Eloquent
  */
 class Animal extends Model
@@ -46,13 +53,7 @@ class Animal extends Model
     private const VALID_FILTERS = [
         'type' => 'breeds.type_id',
         'breed' => 'animals.breed_id',
-        'sales_status' => 'animals.breed_id'
-    ];
-
-    private const VALID_ORDER = [
-        'created_at' => 'animals.created_at',
-        'name' => 'animals.name',
-        'price_ht' => 'animals.price_ht'
+        'sale_status' => 'animals.sale_status'
     ];
 
     protected $appends = ['price_TTC'];
@@ -90,19 +91,24 @@ class Animal extends Model
         return round($priceTTC, 2);
     }
 
-    public function getAnimalsFiltered(array $fields, $orderBy): Collection|array
+    public function scopeAnimalsFiltered(Builder $qb, array $parameters): Builder
     {
-        $qb = Animal::with(['breed.type'])
-            ->select('animals.*')
+        $qb->select('animals.*')
+            ->with(['breed.type'])
             ->join('breeds', 'animals.breed_id', '=', 'breeds.id');
 
-        foreach ($fields as $key => $value) {
+        foreach ($parameters as $key => $value) {
             if (array_key_exists($key, self::VALID_FILTERS)) {
                 $qb->where(self::VALID_FILTERS[$key], $value);
             }
         }
 
-        $qb->orderBy(self::VALID_ORDER[$orderBy], $orderBy === 'created_at' ? 'DESC' : 'ASC' );
-        return $qb->get();
+        return $qb;
+    }
+
+    public function scopeOnSale(Builder $qb): Builder
+    {
+        $qb->where('sale_status', '=', 1);
+        return $qb;
     }
 }
