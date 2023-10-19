@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
 use Symfony\Component\HttpFoundation\Response as httpResponse;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class AnimalController extends Controller
 {
@@ -24,40 +25,42 @@ class AnimalController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): Response
+    public function index(Request $request): Response
     {
         $data = $this->dataService->getTypeAndRaceData();
+        $parameters = $request->all();
+        $orderBy = $parameters['orderBy'] ?? 'created_at';
+
+        $animals = Animal::animalsFiltered($parameters)
+            ->onSale()
+            ->orderBy($orderBy, $orderBy === 'created_at' ? 'DESC' : 'ASC')
+            ->get();
 
         return Inertia::render('Home', [
             'types' => $data['types'],
-            'breeds' => $data['breeds']
+            'breeds' => $data['breeds'],
+            'animals' => $animals
         ]);
     }
 
     /**
      * Display a listing of the resource for admin.
      */
-    public function adminIndex(): Response
+    public function adminIndex(Request $request): Response
     {
         $data = $this->dataService->getTypeAndRaceData();
+        $parameters = $request->all();
+        $orderBy = $parameters['orderBy'] ?? 'created_at';
+
+        $animals = Animal::animalsFiltered($parameters)
+            ->orderBy($orderBy, $orderBy === 'created_at' ? 'DESC' : 'ASC')
+            ->get();
 
         return Inertia::render('Animal/Index', [
             'types' => $data['types'],
-            'breeds' => $data['breeds']
+            'breeds' => $data['breeds'],
+            'animals' => $animals
         ]);
-    }
-
-    /**
-     * Get animals with different filters
-     */
-    public function getAnimals(Request $request): JsonResponse
-    {
-        $orderBy = $request->input('orderBy');
-        $field = $request->all();
-
-        $animals = (new Animal)->getAnimalsFiltered($field, $orderBy);
-
-        return response()->json(['animals' => $animals]);
     }
 
     /**

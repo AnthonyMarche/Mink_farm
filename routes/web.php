@@ -26,7 +26,6 @@ Route::get('/', function () {
 
 Route::get('/', [AnimalController::class, 'index'])->name('home');
 Route::get('/animals', [AnimalController::class, 'adminIndex'])->name('admin.home')->middleware(['auth']);
-Route::get('/getAnimals', [AnimalController::class, 'getAnimals'])->name('getAnimals');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

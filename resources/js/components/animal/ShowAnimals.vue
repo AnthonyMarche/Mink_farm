@@ -4,6 +4,7 @@ import SelectInput from "@/components/SelectInput.vue";
 import {computed, ref, watch, watchEffect} from "vue";
 import InputLabel from "@/components/InputLabel.vue";
 import {router, usePage} from "@inertiajs/vue3";
+import {useToast} from "vue-toastification";
 
 const props = defineProps({
     types: {
@@ -12,14 +13,17 @@ const props = defineProps({
     breeds: {
         type: Object,
     },
+    animals: {
+        type: Object,
+    },
 });
+
+const toast = useToast();
 
 const selectedType = ref(null);
 const selectedBreed = ref(null);
 const selectedOrderBy = ref('created_at');
 const selectedSaleStatus = ref('')
-const emit = defineEmits(['updateAnimals']);
-const animals = ref([]);
 const validBreed = ref([]);
 const orderByOptions = {
     created_at: "Les plus récents",
@@ -50,31 +54,39 @@ watch(selectedType, (newType) => {
     );
 });
 
-const fetchFilteredAnimals = () => {
-    axios.get('/getAnimals', {
-        params: {
-            type: selectedType.value,
-            breed: selectedBreed.value,
-            orderBy: selectedOrderBy.value,
-            sale_status: selectedSaleStatus.value
+const buildQueryParams = () => {
+    const queryParams = {
+        type: selectedType.value,
+        breed: selectedBreed.value,
+        orderBy: selectedOrderBy.value,
+        sale_status: selectedSaleStatus.value,
+    };
+
+    for (const key in queryParams) {
+        if (queryParams[key] === null || queryParams[key] === "") {
+            delete queryParams[key];
+        }
+    }
+
+    return new URLSearchParams(queryParams).toString();
+};
+
+
+const refreshAnimalsFiltered = () => {
+    router.visit(router.page.props.ziggy.location + '?' + buildQueryParams(), {
+        method: 'GET',
+        only: ['animals'],
+        preserveState: true,
+        preserveScroll: true,
+        onError(Errors) {
+            toast.error("Une erreur est survenue")
+            console.log(Errors)
         },
     })
-        .then(response => {
-            if (isAdmin.value) {
-                animals.value = response.data.animals;
-            } else {
-                animals.value = response.data.animals.filter(
-                    animal => animal.sale_status === 'en vente');
-            }
-            emit('updateAnimals', animals.value);
-        })
-        .catch(error => {
-            console.error(error);
-        });
 };
 
 watchEffect(() => {
-    fetchFilteredAnimals();
+    refreshAnimalsFiltered();
 });
 </script>
 
