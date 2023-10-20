@@ -1,16 +1,18 @@
 <script setup>
-import { ref } from 'vue';
+import {ref} from 'vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link } from '@inertiajs/vue3';
+import {Link, usePage} from '@inertiajs/vue3';
+import GlobalToast from "@/components/GlobalToast.vue";
 
 const showingNavigationDropdown = ref(false);
 </script>
 
 <template>
+    <global-toast v-if="usePage().props.flash.message" :message="usePage().props.flash.message"/>
     <div>
         <div class="min-h-screen bg-gray-100">
             <nav class="bg-white border-b border-gray-100">
@@ -71,7 +73,7 @@ const showingNavigationDropdown = ref(false);
                                     </template>
 
                                     <template #content>
-                                        <DropdownLink :href="route('profile.edit')"> Profil </DropdownLink>
+                                        <DropdownLink :href="route('profile.edit')"> Profil</DropdownLink>
                                         <DropdownLink :href="route('logout')" method="post" as="button">
                                             Déconnexion
                                         </DropdownLink>
@@ -119,15 +121,15 @@ const showingNavigationDropdown = ref(false);
                     class="sm:hidden"
                 >
                     <div class="pt-2 pb-3 space-y-1">
-                      <NavLink :href="route('admin.home')" :active="route().current('admin.home')">
-                        Animaux
-                      </NavLink>
-                      <NavLink :href="route('types.index')" :active="route().current('types.index')">
-                        Types
-                      </NavLink>
-                      <NavLink :href="route('breeds.index')" :active="route().current('breeds.index')">
-                        Races
-                      </NavLink>
+                        <NavLink :href="route('admin.home')" :active="route().current('admin.home')">
+                            Animaux
+                        </NavLink>
+                        <NavLink :href="route('types.index')" :active="route().current('types.index')">
+                            Types
+                        </NavLink>
+                        <NavLink :href="route('breeds.index')" :active="route().current('breeds.index')">
+                            Races
+                        </NavLink>
                     </div>
 
                     <!-- Responsive Settings Options -->
@@ -140,7 +142,7 @@ const showingNavigationDropdown = ref(false);
                         </div>
 
                         <div class="mt-3 space-y-1">
-                            <ResponsiveNavLink :href="route('profile.edit')"> Profil </ResponsiveNavLink>
+                            <ResponsiveNavLink :href="route('profile.edit')"> Profil</ResponsiveNavLink>
                             <ResponsiveNavLink :href="route('logout')" method="post" as="button">
                                 Déconnexion
                             </ResponsiveNavLink>
@@ -148,7 +150,7 @@ const showingNavigationDropdown = ref(false);
                     </div>
                 </div>
             </nav>
-          <slot />
+            <slot/>
         </div>
     </div>
 </template>
