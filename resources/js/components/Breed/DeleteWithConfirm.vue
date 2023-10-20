@@ -12,8 +12,8 @@ const props = defineProps({
         required: true
     },
     url: {
-      type: String,
-      required: true
+        type: String,
+        required: true
     },
     table: {
         type: String,
@@ -28,16 +28,11 @@ const confirmDelete = () => {
 };
 
 const deleteItem = () => {
-    axios.delete(props.url)
-        .then(() => {
-            confirmDeletion.value = false;
-            toast.success( props.item.name + " supprimé avec succès")
-            router.visit(router.page.url);
-        })
-        .catch(error => {
+    router.delete(props.url, {
+        onError: () => {
             toast.error('Erreur lors de la suppression')
-            console.error('Erreur lors de la suppression', error);
-        });
+        },
+    })
 };
 
 const closeModal = () => {
@@ -47,7 +42,7 @@ const closeModal = () => {
 
 <template>
     <section class="space-y-6">
-      <i @click="confirmDelete" class="fa-solid fa-trash cursor-pointer" style="color: #ff0000;"></i>
+        <i @click="confirmDelete" class="fa-solid fa-trash cursor-pointer" style="color: #ff0000;"></i>
 
         <Modal :show="confirmDeletion" @close="closeModal">
             <div class="p-6">
@@ -56,11 +51,11 @@ const closeModal = () => {
                 </h2>
 
                 <p v-if="table === 'type'" class="mt-4 text-sm text-gray-600">
-                    La suppression de {{item.name }} entrainera également la suppression des races
+                    La suppression de {{ item.name }} entrainera également la suppression des races
                     associées et des animaux liés à ces races
                 </p>
                 <p v-if="table === 'breed'" class="mt-4 text-sm text-gray-600">
-                    La suppression de {{item.name }} entrainera également la suppression
+                    La suppression de {{ item.name }} entrainera également la suppression
                     des animaux associés à cette races
                 </p>
 

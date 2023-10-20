@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\TypeRequest;
 use App\Models\Type;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
-use Symfony\Component\HttpFoundation\Response as httpResponse;
 
 class TypeController extends Controller
 {
@@ -34,23 +34,23 @@ class TypeController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(TypeRequest $request): RedirectResponse
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255'
-        ]);
-        Type::create($validatedData);
+        $validatedData = $request->validated();
+        $type = Type::create($validatedData);
 
-        return response()->json([], httpResponse::HTTP_OK);
+        return Redirect::route('types.index')
+            ->with('message', [
+                'text' => $type->name . ' créé avec succès',
+                'type' => 'success'
+            ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id): Response
+    public function edit(Type $type): Response
     {
-        $type = Type::find($id);
-
         return Inertia::render('Type/Edit', [
             'type' => $type,
         ]);
@@ -59,31 +59,28 @@ class TypeController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id): JsonResponse
+    public function update(TypeRequest $request, Type $type): RedirectResponse
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255'
-        ]);
-
-        $type = Type::find($id);
+        $validatedData = $request->validated();
         $type->update($validatedData);
 
-        return response()->json([], httpResponse::HTTP_OK);
+        return Redirect::route('types.index')
+            ->with('message', [
+                'text' => $type->name . ' modifié avec succès',
+                'type' => 'success'
+            ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(Type $type): RedirectResponse
     {
-        $type = Type::find($id);
-
-        if (!$type) {
-            return response()->json(['message' => 'Animal non trouvé'], httpResponse::HTTP_NOT_FOUND);
-        }
-
         $type->delete();
-
-        return response()->json(['message' => 'Animal supprimé avec succès'], httpResponse::HTTP_OK);
+        return redirect()->back()
+            ->with('message', [
+                'text' => $type->name . ' supprimé avec succès',
+                'type' => 'success'
+            ]);
     }
 }

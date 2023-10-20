@@ -36,9 +36,10 @@ const saleStatusOptions = {
     0: "Vendu",
 };
 
+const pageUrl = router.page.props.ziggy.location;
 const user = usePage().props.auth.user;
 const isAdmin = computed(() => {
-    return user !== null && router.page.url === '/animals';
+    return user !== null && pageUrl === route('admin.home');
 });
 
 watch(selectedType, (newType) => {
@@ -73,7 +74,7 @@ const buildQueryParams = () => {
 
 
 const refreshAnimalsFiltered = () => {
-    router.visit(router.page.props.ziggy.location + '?' + buildQueryParams(), {
+    router.visit(pageUrl + '?' + buildQueryParams(), {
         method: 'GET',
         only: ['animals'],
         preserveState: true,
@@ -130,7 +131,7 @@ watchEffect(() => {
     </div>
     <div class="card mx-auto sm:px-6 lg:px-8 space-y-6 mt-10">
         <div class="p-4 sm:p-6 bg-gray-100 shadow sm:rounded-lg border" v-for="animal in animals">
-            <CardShow :animal="animal" @refreshAnimals="fetchFilteredAnimals" :is-admin="isAdmin"></CardShow>
+            <CardShow :animal="animal" @refreshAnimals="refreshAnimalsFiltered" :is-admin="isAdmin"></CardShow>
         </div>
         <div v-if="!animals.length" class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
             <p class="text-center">Aucun animal ne correspond à vos critères</p>

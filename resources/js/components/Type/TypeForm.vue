@@ -6,66 +6,56 @@ import InputError from "@/components/InputError.vue";
 import InputLabel from "@/components/InputLabel.vue";
 import SecondaryButton from "@/components/SecondaryButton.vue";
 import {useToast} from "vue-toastification";
-import {toRefs} from "vue";
 
 const props = defineProps({
-  type: {
-    type: Object,
-  }
+    type: {
+        type: Object,
+    }
 });
 
-const {type} = toRefs(props);
 const toast = useToast();
 const form = useForm({
-  name: type.value ? type.value.name : '',
+    name: props.type?.name ?? '',
 });
 
 const submit = () => {
-  if (type.value) {
-    axios.put(route('types.update', {id: type.value.id}), form)
-        .then(() => {
-          toast.success("Type modifié avec succès")
-          router.visit(route('types.index'))
-        })
-        .catch(error => {
-          toast.error("Erreur lors de la modification")
-          form.errors = error.response.data.errors.name[0];
-        })
-  } else {
-    axios.post(route('types.store'), form)
-        .then(() => {
-          toast.success("Type créé avec succès")
-          router.visit(route('types.index'))
-        })
-        .catch(error => {
-          toast.error("Erreur lors de la création")
-          form.errors = error.response.data.errors.name[0];
-        })
-  }
+    if (props.type) {
+        form.put(route('types.update', {type: props.type.id}), {
+            onError: () => {
+                toast.error("Erreur lors de la modification")
+            },
+        });
+    } else {
+        form.post(route('types.store'), {
+            onError: () => {
+                toast.error("Erreur lors de la création")
+            },
+        });
+    }
 };
 </script>
 
 <template>
-  <form @submit.prevent="submit" class="flex flex-col items-center py-8">
-    <div class="w-1/2">
-      <InputLabel for="name" value="Nom du type"/>
-      <TextInput
-          id="name"
-          type="text"
-          class="mt-1 block w-full"
-          v-model="form.name"
-          required
-          autofocus
-          autocomplete="name"
-      />
-      <InputError class="mt-2" :message="form.errors.name"/>
-    </div>
+    <form @submit.prevent="submit" class="flex flex-col items-center py-8">
+        <div class="w-1/2">
+            <InputLabel for="name" value="Type d'animal"/>
+            <TextInput
+                id="name"
+                type="text"
+                class="mt-1 block w-full"
+                v-model="form.name"
+                required
+                autofocus
+                autocomplete="on"
+            />
+            <InputError class="mt-2" :message="form.errors.name"/>
+        </div>
 
-    <div class="flex items-center justify-end mt-6 space-x-8">
-      <SecondaryButton @click="router.visit(route('types.index'))">Annuler</SecondaryButton>
-      <PrimaryButton>Enregistrer</PrimaryButton>
-    </div>
-  </form>
+        <div class="flex items-center justify-end mt-6 space-x-8">
+            <SecondaryButton @click="router.visit(route('types.index'))">Annuler</SecondaryButton>
+            <PrimaryButton type="submit" :disabled="form.processing">Enregistrer</PrimaryButton>
+        </div>
+    </form>
 </template>
 
 <style scoped>
