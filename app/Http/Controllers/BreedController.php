@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BreedRequest;
 use App\Models\Breed;
 use App\Models\Type;
 use App\Services\DataService;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
 use Inertia\Response;
-use Symfony\Component\HttpFoundation\Response as httpResponse;
 
 class BreedController extends Controller
 {
@@ -48,65 +48,55 @@ class BreedController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(BreedRequest $request): RedirectResponse
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'type_id' => 'required|exists:types,id',
-        ], [
-            'type_id.required' => 'Vous devez selectionner un type.',
-        ]);
+        $validatedData = $request->validated();
 
-        Breed::create($validatedData);
+        $breed = Breed::create($validatedData);
 
-        return response()->json([], httpResponse::HTTP_OK);
+        return Redirect::route('breeds.index')
+            ->with('message', [
+                'text' => $breed->name . ' créée avec succès',
+                'type' => 'success'
+            ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id): Response
+    public function edit(Breed $breed): Response
     {
-        $breed = Breed::with('type')->find($id);
-        $types = Type::all();
-
         return Inertia::render('Breed/Edit', [
-            'breed' => $breed,
-            'types' => $types,
+            'breed' => $breed->load('type'),
+            'types' => Type::all(),
         ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id): JsonResponse
+    public function update(BreedRequest $request, Breed $breed): RedirectResponse
     {
-        $validatedData = $request->validate([
-            'name' => 'required|string|max:255',
-            'type_id' => 'required|exists:types,id',
-        ], [
-            'type_id.required' => 'Vous devez selectionner un type.',
-        ]);
-
-        $breed = Breed::find($id);
+        $validatedData = $request->validated();
         $breed->update($validatedData);
 
-        return response()->json([], httpResponse::HTTP_OK);
+        return Redirect::route('breeds.index')
+            ->with('message', [
+                'text' => $breed->name . ' modifiée avec succès',
+                'type' => 'success'
+            ]);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(Breed $breed): RedirectResponse
     {
-        $breed = Breed::find($id);
-
-        if (!$breed) {
-            return response()->json(['message' => 'Animal non trouvé'], httpResponse::HTTP_NOT_FOUND);
-        }
-
         $breed->delete();
-
-        return response()->json(['message' => 'Animal supprimé avec succès'], httpResponse::HTTP_OK);
+        return redirect()->back()
+            ->with('message', [
+                'text' => $breed->name . ' supprimé avec succès',
+                'type' => 'success'
+            ]);
     }
 }

@@ -20,7 +20,7 @@ const form = useForm({
 
 const submit = () => {
     if (props.type) {
-        form.put(route('types.update', {type: props.type.id}), {
+        form.patch(route('types.update', {type: props.type.id}), {
             onError: () => {
                 toast.error("Erreur lors de la modification")
             },
