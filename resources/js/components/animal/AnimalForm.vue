@@ -1,13 +1,12 @@
 <script setup>
 
 import {router, useForm, usePage} from "@inertiajs/vue3";
-import {ref, toRefs, watch} from "vue";
+import {computed, ref, toRefs, watch} from "vue";
 import TextInput from "@/components/TextInput.vue";
 import InputLabel from "@/components/InputLabel.vue";
 import InputError from "@/components/InputError.vue";
 import PrimaryButton from "@/components/PrimaryButton.vue";
 import Checkbox from "@/components/Checkbox.vue";
-import SelectInput from "@/components/SelectInput.vue";
 import TextAreaInput from "@/components/TextAreaInput.vue";
 import {useToast} from "vue-toastification";
 import SecondaryButton from "@/components/SecondaryButton.vue";
@@ -26,25 +25,70 @@ const props = defineProps({
     },
 });
 
-const {animal} = toRefs(props);
-const selectedType = ref(null);
-const validBreed = ref([]);
-const toast = useToast();
-let currentImage = ref(
-    animal.value && animal.value.image_path ? '/storage/' + animal.value.image_path : null
-)
-
-watch(selectedType, (newType) => {
-    if (!newType) {
-        validBreed.value = [];
-        return;
+const defaultType = computed(() => {
+    if (props.animal) {
+        return props.animal.breed.type;
     }
 
-    validBreed.value = props.breeds.filter(
-        breed => breed.type_id === newType
-    );
+    return {
+        name: 'Selectionnez un type',
+        id: null
+    }
 });
 
+const typesOption = computed(() => {
+    if (props.animal) {
+        return types.value.filter(
+            type => type.name !== props.animal.breed.type.name
+        );
+    }
+
+    return props.types;
+});
+
+const selectedType = ref(defaultType.value.id);
+
+const defaultBreed = computed(() => {
+    if (props.animal && props.animal.breed.type.id === selectedType.value) {
+        return props.animal.breed;
+    }
+
+    return {
+        name: 'Selectionnez une race',
+        id: null
+    }
+});
+
+const {breeds} = toRefs(props);
+const breedsOption = ref(getBreedsOption())
+const {types} = toRefs(props);
+const selectedBreed = ref(defaultBreed.value.id);
+const toast = useToast();
+let currentImage = ref(
+    props.animal && props.animal.image_path ? '/storage/' + props.animal.image_path : null
+)
+
+watch(selectedType, () => {
+    breedsOption.value = getBreedsOption();
+    selectedBreed.value = defaultBreed.value.id;
+});
+
+watch(selectedBreed, () => {
+    form.breed_id = selectedBreed.value
+});
+
+function getBreedsOption() {
+    if (selectedType.value) {
+
+        return breeds.value.filter(
+            breed => breed.type.id === selectedType.value && breed.type.id !== defaultBreed.value.id
+        );
+    }
+
+    return [];
+}
+
+/* Image change function */
 function onChangeImage(e) {
     form.image = e.target.files[0];
     currentImage.value = URL.createObjectURL(e.target.files[0]);
@@ -58,59 +102,35 @@ function deleteImage() {
     currentImage.value = null;
     form.image = null
 }
+/* End image change function */
 
+/* Form */
 const form = useForm({
-    image: animal.value ? animal.value.image : '',
-    name: animal.value ? animal.value.name : '',
-    age: animal.value ? animal.value.age : '',
-    description: animal.value ? animal.value.description : '',
-    price_ht: animal.value ? animal.value.price_ht : '',
-    sale_status: animal.value ? animal.value.sale_status === 'en vente' : false,
-    breed_id: animal.value ? animal.value.breed_id : null,
+    image: props.animal?.image ?? '',
+    name: props.animal?.name ?? '',
+    age: props.animal?.age ?? '',
+    description: props.animal?.description ?? '',
+    price_ht: props.animal?.price_ht ?? '',
+    sale_status: props.animal?.sale_status ?? 0,
+    breed_id: selectedBreed.value,
     user_id: usePage().props.auth.user.id
 });
 
 const submitForm = () => {
-    let formData = new FormData()
-    for (const key in form) {
-        formData.append(key, form[key]);
-    }
-    formData.set('sale_status', form.sale_status === true ? '1' : '0');
-
-    if (animal.value) {
-        const headers = {
-            'Content-Type': 'multipart/form-data',
-            'enctype': 'multipart/form-data',
-        }
-        formData.append("_method", 'PATCH');
-        axios({
-            method: "POST",
-            url: route('animals.update', {animal: animal.value.id}),
-            data: formData,
-            headers: headers,
-        })
-            .then(response => {
-                toast.success("Animal modifié avec succès");
-                router.visit(route('admin.home'));
-            })
-            .catch(error => {
-                const errors = error.response.data.errors;
-                for (const field in errors) {
-                    form.errors[field] = errors[field][0];
-                }
-            });
+    if (props.animal) {
+        router.post(route('animals.update', {animal: props.animal.id}), {
+            _method: 'put',
+            ...form,
+            onError: () => {
+                toast.error("Erreur lors de la modification")
+            },
+        });
     } else {
-        axios.post(route('animals.store'), formData)
-            .then(response => {
-                toast.success("Animal Créé avec succès");
-                router.visit(route('admin.home'));
-            })
-            .catch(error => {
-                const errors = error.response.data.errors;
-                for (const field in errors) {
-                    form.errors[field] = errors[field][0];
-                }
-            });
+        form.post(route('animals.store'), {
+            onError: () => {
+                toast.error("Erreur lors de la création")
+            },
+        });
     }
 };
 </script>
@@ -136,7 +156,6 @@ const submitForm = () => {
                             type="file"
                             class="mt-1 block"
                             @change="onChangeImage"
-                            autofocus
                         />
                         <InputError class="mt-2" :message="form.errors.image"/>
                         <img v-if="currentImage" :src=currentImage alt="Photo animal" class="image-size mt-5">
@@ -151,7 +170,7 @@ const submitForm = () => {
                         v-model="form.name"
                         required
                         autofocus
-                        autocomplete="name"
+                        autocomplete="on"
                     />
                     <InputError class="mt-2" :message="form.errors.name"/>
                 </div>
@@ -163,7 +182,7 @@ const submitForm = () => {
                         class="mt-1 block"
                         v-model="form.age"
                         required
-                        autocomplete="age"
+                        autocomplete="on"
                     />
                     <InputError class="mt-2" :message="form.errors.age"/>
                 </div>
@@ -177,32 +196,37 @@ const submitForm = () => {
                         class="mt-1 block"
                         v-model="form.description"
                         required
-                        autofocus
-                        autocomplete="description"
+                        autocomplete="on"
                     />
                     <InputError class="mt-2" :message="form.errors.description"/>
                 </div>
                 <div class="flex flex-col">
                     <InputLabel class="mr-4 w-1/2" for="type" value="Type :"/>
-                    <SelectInput
-                        id="type"
-                        class="mt-1 block"
-                        :options="types"
-                        :required-option=true
-                        default-option="Choisissez un type"
+                    <select
                         v-model="selectedType"
-                    />
+                        id="type"
+                        class="mt-1 block w-full"
+                    >
+                        <option :value="defaultType.id" selected>{{ defaultType.name }}</option>
+                        <option v-for="type in typesOption" :value="type.id">
+                            {{ type.name }}
+                        </option>
+                    </select>
                 </div>
                 <div class="flex flex-col">
                     <InputLabel class="mr-4 w-1/2" for="breed" value="Race :"/>
-                    <SelectInput
+                    <select
                         id="breed"
-                        class="mt-1 block"
-                        :options="validBreed"
-                        :required-option=true
-                        default-option="Choisissez une race"
-                        v-model="form.breed_id"
-                    />
+                        class="mt-1 block w-full"
+                        v-model="selectedBreed"
+                        :disabled="breedsOption.length === 0"
+                        :class="{'disabled-select': breedsOption.length === 0}"
+                    >
+                        <option :value="defaultBreed.id" selected>{{ defaultBreed.name }}</option>
+                        <option v-for="breed in breedsOption" :value="breed.id">
+                            {{ breed.name }}
+                        </option>
+                    </select>
                     <InputError class="mt-2" :message="form.errors.breed_id"/>
                 </div>
                 <div class="flex flex-col">
@@ -213,7 +237,7 @@ const submitForm = () => {
                         class="mt-1 block"
                         v-model="form.price_ht"
                         required
-                        autocomplete="price_HT"
+                        autocomplete="on"
                     />
                     <InputError class="mt-2" :message="form.errors.price_ht"/>
                 </div>
@@ -222,8 +246,9 @@ const submitForm = () => {
                     <Checkbox
                         id="saleStatus"
                         class="mt-1 block"
-                        v-model="form.sale_status"
-                        :checked="form.sale_status"
+                        :true-value=1
+                        :false-value=0
+                        v-model:checked="form.sale_status"
                     />
                     <InputError :message="form.errors.sale_status"/>
                 </div>
@@ -247,5 +272,9 @@ const submitForm = () => {
     color: #ff0000;
     z-index: 10;
     cursor: pointer
+}
+
+.disabled-select {
+    background-color: #bfbfbf;
 }
 </style>

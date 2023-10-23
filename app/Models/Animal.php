@@ -79,11 +79,6 @@ class Animal extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function getSaleStatusAttribute(): string
-    {
-        return $this->attributes['sale_status'] ? 'en vente' : 'vendu';
-    }
-
     public function getPriceTTCAttribute(): float
     {
         $vatRates = $this->user->countryVatRate->vat_rate;
