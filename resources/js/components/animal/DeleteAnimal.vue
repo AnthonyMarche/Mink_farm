@@ -4,6 +4,7 @@ import Modal from '@/Components/Modal.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import {ref} from 'vue';
 import {useToast} from "vue-toastification";
+import {router} from "@inertiajs/vue3";
 
 const props = defineProps({
     animalId: {
@@ -20,15 +21,12 @@ const confirmDelete = () => {
 };
 
 const deleteAnimal = (animalId) => {
-    axios.delete(route('animals.destroy', { animal: animalId}))
-        .then(res => {
-            confirmDeletion.value = false;
-            toast.success("Animal supprimé avec succès")
-            emit('refreshAnimals');
-        })
-        .catch(error => {
-            console.error('Erreur lors de la suppression de l\'animal', error);
-        });
+    router.delete(route('animals.destroy', { animal: animalId}, {
+        onError: () => {
+            toast.error('Erreur lors de la suppression de l\'animal')
+        }
+    }))
+    closeModal()
 };
 
 const closeModal = () => {

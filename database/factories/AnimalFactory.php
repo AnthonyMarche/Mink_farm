@@ -12,12 +12,12 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class AnimalFactory extends Factory
 {
     private const BREED_IMAGE = [
-        1 => '/animalsPictures/base_labrador.jpg',
-        2 => '/animalsPictures/base_frison.jpg',
-        3 => '/animalsPictures/base_pottok.jpg',
-        4 => '/animalsPictures/base_irish_cob.jpg',
-        5 => '/animalsPictures/base_merinos.jpg',
-        6 => '/animalsPictures/base_solognote.jpg',
+        1 => 'animalsPictures/base_labrador.jpg',
+        2 => 'animalsPictures/base_frison.jpg',
+        3 => 'animalsPictures/base_pottok.jpg',
+        4 => 'animalsPictures/base_irish_cob.jpg',
+        5 => 'animalsPictures/base_merinos.jpg',
+        6 => 'animalsPictures/base_solognote.jpg',
     ];
 
     /**

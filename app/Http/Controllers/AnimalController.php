@@ -5,13 +5,12 @@ namespace App\Http\Controllers;
 use App\Http\Requests\AnimalRequest;
 use App\Models\Animal;
 use App\Services\DataService;
-use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 use Inertia\Response;
-use Symfony\Component\HttpFoundation\Response as httpResponse;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 class AnimalController extends Controller
 {
@@ -79,11 +78,11 @@ class AnimalController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(AnimalRequest $request): JsonResponse
+    public function store(AnimalRequest $request): RedirectResponse
     {
-        $data = $request->validated();
+        $validatedData = $request->validated();
 
-        if (!empty($request->image) && $request->image != 'undefined' && $request->image != 'null') {
+        if ($request->image) {
             $imageName = time() . '.' . $request->image->extension();
 
             $path = $request->file('image')->storeAs(
@@ -92,24 +91,27 @@ class AnimalController extends Controller
                 'public'
             );
 
-            $data['image_path'] = $path;
+            $validatedData['image_path'] = $path;
         }
 
-        Animal::create($data);
+        $animal = Animal::create($validatedData);
 
-        return response()->json(['message' => 'Animal créé avec succès'], httpResponse::HTTP_OK);
+        return Redirect::route('admin.home')
+            ->with('message', [
+                'text' => $animal->name . ' créé avec succès',
+                'type' => 'success'
+            ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id): Response
+    public function edit(Animal $animal): Response
     {
         $data = $this->dataService->getTypeAndRaceData();
-        $animal = Animal::with(['breed.type'])->find($id);
 
         return Inertia::render('Animal/Edit', [
-            'animal' => $animal,
+            'animal' => $animal->load('breed.type'),
             'types' => $data['types'],
             'breeds' => $data['breeds']
         ]);
@@ -118,21 +120,18 @@ class AnimalController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(string $id, AnimalRequest $request): JsonResponse
+    public function update(Animal $animal, AnimalRequest $request): RedirectResponse
     {
-        $animal = Animal::find($id);
+        $validatedData = $request->validated();
 
-        $data = $request->validated();
-
-        if ($request->image != 'undefined') {
+        if ($request->image) {
 
             if (!is_null($animal->image_path) && Storage::disk('public')->exists($animal->image_path)) {
                 Storage::disk('public')->delete($animal->image_path);
-                $data['image_path'] = null;
+                $validatedData['image_path'] = null;
             }
 
-
-            if ($request->image != 'null') {
+            if ($request->image) {
                 $imageName = time() . '.' . $request->image->extension();
 
                 $path = $request->file('image')->storeAs(
@@ -141,32 +140,33 @@ class AnimalController extends Controller
                     'public'
                 );
 
-                $data['image_path'] = $path;
+                $validatedData['image_path'] = $path;
             }
         }
 
-        $animal->update($data);
+        $animal->update($validatedData);
 
-        return response()->json(['message' => 'Animal modifié avec succès'], httpResponse::HTTP_OK);
-    }
+        return Redirect::route('admin.home')
+            ->with('message', [
+                'text' => $animal->name . ' modifié avec succès',
+                'type' => 'success'
+            ]);    }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id): JsonResponse
+    public function destroy(Animal $animal): RedirectResponse
     {
-        $animal = Animal::find($id);
-
-        if (!$animal) {
-            return response()->json(['message' => 'Animal non trouvé'], httpResponse::HTTP_NOT_FOUND);
-        }
-
         if (!is_null($animal->image_path) && Storage::disk('public')->exists($animal->image_path)) {
             Storage::disk('public')->delete($animal->image_path);
         }
 
         $animal->delete();
 
-        return response()->json(['message' => 'Animal supprimé avec succès'], httpResponse::HTTP_OK);
+        return redirect()->back()
+            ->with('message', [
+                'text' => $animal->name . ' supprimé avec succès',
+                'type' => 'success'
+            ]);
     }
 }

@@ -18,14 +18,14 @@ defineProps({
 <template>
     <div class="flex flex-col">
         <div v-if="isAdmin" class="flex justify-end">
-            <div v-if="animal.sale_status === 'vendu'" class="bg-red-700 w-fit p-2 rounded-lg">VENDU</div>
+            <div v-if="animal.sale_status === 0" class="bg-red-700 w-fit p-2 rounded-lg">VENDU</div>
         </div>
         <h3 class="text-center text-xl">
             {{ animal.name }} - {{ animal.age }} {{ animal.age <= 1 ? 'an' : 'ans' }}
         </h3>
         <div>
             <div class="flex justify-around mt-10">
-                <img v-if="animal.image_path" :src="'/storage' + animal.image_path" alt="Photo animal" class="w-80 rounded-lg">
+                <img v-if="animal.image_path" :src="'/storage/' + animal.image_path" alt="Photo animal" class="w-80 rounded-lg">
                 <div class="flex flex-col w-1/2">
                     <ul class="flex justify-around space-x-40 my-12">
                         <li class="flex">
