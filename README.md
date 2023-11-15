@@ -1,4 +1,4 @@
-# MINK TEST - Laravel & Vue.Js
+# MINK Farm - Laravel & Vue.Js
 
 ## Presentation
 
